@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Investment Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="navbar-brand">Market Analyzer</div>
+        <ul class="navbar-nav">
+          <li><a href="#home">Home</a></li>
+          <li><a href="{{ url_for('about') }}">About Us</a>
+          </li> <!-- Changes here -->
+          <li><a href="#news-information">News</a></li> <!-- Link to News section -->
+          <li><a href="#dashboard">Analysis</a></li> <!-- Link to Dashboard section -->
+          <li><a href="#help">Help</a></li>
+        </ul>
+        <!-- <div class="navbar-auth">
+          <a href="#signup" class="auth-signup">Sign Up</a>
+          <a href="#signin" class="auth-signin">Sign In</a>
+        </div> -->
+    </nav>
+
+    </header>
+
+    <main>
+
+      <section class="hero">
+        <div class="hero-content">
+          <h1>Invest Your Money Wisely</h1>
+          <button id="runScriptBtn">Run Script</button>
+          <div id="loadingMessage" style="display: none;">Loading... Please wait.</div>
+          <div id="dataDisplay"></div>
+
+          
+          <p>Maximize your investment with our cutting-edge platform.</p>
+          <form id="hero-stock-search-form" onsubmit="heroPerformSearch(event)">
+            <div class="hero-search-box">
+              <input
+                type="search"
+                name="stock"
+                id="hero-stock-search"
+                placeholder="Search for stocks and more"
+                oninput="showHeroSuggestions(this.value)"
+                autocomplete="off"
+              />
+              <button type="submit" id="hero-search-button">Search</button>
+              <div class="dropdown-content" id="hero-dropdown-content"></div>
+            </div>
+          </form>
+          <div id="hero-stock-details" style="display: none;">
+            <!-- hey hello -->
+
+            <!-- Stock details will be populated by JavaScript -->
+          </div>
+        </div>
+      </section>
+
+
+      <section id="dashboard" class="dashboard">
+        <div class="financial-details">
+
+          <h2>Financial Analysis Trends</h2>
+          <aside class="search-panel">
+            <form action="{{ url_for('dashboard') }}" method="get">
+              <div class="search-box">
+                <input
+                  type="search"
+                  name="stock"
+                  id="stock-search-dash"
+                  placeholder="Search for stocks and more"
+                />
+                <button type="submit">Search</button>
+                <div class="dropdown-content" id="dropdown-content"></div>
+              </div>
+            </form>
+          </aside>
+
+          <div id="search-results">
+            {% if stock_data %}
+            <div class="indicator {{ stock_data.get('trend', '') }}">
+              <span>SMA 10:</span> {{ stock_data.get('SMA_10', 'N/A') }}
+            </div>
+            <div class="indicator {{ stock_data.get('trend', '') }}">
+              <span>SMA 20:</span> {{ stock_data.get('SMA_20', 'N/A') }}
+            </div>
+            <div class="indicator {{ stock_data.get('trend', '') }}">
+              <span>SMA 50:</span> {{ stock_data.get('SMA_50', 'N/A') }}
+            </div>
+            <div class="indicator">
+              <span>RSI:</span> {{ stock_data.get('RSI', 'N/A') }}
+            </div>
+            <div class="indicator">
+              <span>MACD:</span> {{ stock_data.get('MACD', 'N/A') }}
+            </div>
+            <div class="indicator">
+              <span>MACD Signal:</span> {{ stock_data.get('MACD_Signal', 'N/A')
+              }}
+            </div>
+            <div class="indicator-analysis">
+              {{ stock_data.get('MACD_Analysis', '') }}
+            </div>
+            <div class="indicator-analysis">
+              {{ stock_data.get('SMA_Analysis', '') }}
+            </div>
+            <div class="indicator-analysis">
+              {{ stock_data.get('RSI_Analysis', '') }}
+            </div>
+            {% else %}
+            <p>No stock information found for the query.</p>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+
+
+
+      <section class="news-information" id="news-information">
+        <h2>News Information</h2>
+
+        
+        <form action="/" method="get">
+          <select name="news_symbol" onchange="this.form.submit()">
+              <option value="">All Stocks</option>
+              {% for symbol in unique_stock_symbols %}
+                  <option value="{{ symbol }}" {% if request.args.get('news_symbol') == symbol %}selected{% endif %}>{{ symbol }}</option>
+                  
+              {% endfor %}
+          </select>
+        </form>
+
+    
+        <div class="news-list">
+            {% for news in news_list %}
+          <article class="news-item {{ news.Sentiment|lower }}">
+            <h3>{{ news.Headline }}</h3>
+            <p class="news-meta">Date: {{ news.Date }} | Time: {{ news.Time }}</p>
+            <p>{{ news.Summary }}</p>
+            <div class="triggered-stocks"><b>Triggered Stocks:</b> {{ news.Triggered_Stock_Names }}</div>
+            {% if stock_prices.price_day_before and stock_prices.price_day_of %}
+            <div class="stock-prices">
+              
+              <p>Price Day Before: <span class="highlight">{{ stock_prices.price_day_before }}</span></p>
+              <p>Price Day Of: <span class="highlight">{{ stock_prices.price_day_of }}</span></p>
+            </div>
+            {% endif %}
+          </article>
+          {% endfor %}
+
+        </div>
+
+        <!-- Pagination could be dynamically generated or managed via JavaScript or server-side logic -->
+
+        <div class="pagination">
+          {% if page > 1 %}
+          <a href="{{ url_for('dashboard', page=1) }}" class="page-link"
+            >First</a
+          >
+          <a href="{{ url_for('dashboard', page=page-1) }}" class="page-link"
+            >&laquo; Previous</a
+          >
+          {% endif %}
+          <!-- Existing page links -->
+          {% if page < pages %}
+          <a href="{{ url_for('dashboard', page=page+1) }}" class="page-link"
+            >Next &raquo;</a
+          >
+          <a href="{{ url_for('dashboard', page=pages) }}" class="page-link"
+            >Last</a
+          >
+          {% endif %}
+        </div>
+      </section>
+
+      <section class="sentiment-analysis">
+        <h2>Sentiment Analysis</h2>
+        <div class="sentiment-wrapper">
+          <!-- Ensure fixed order by manually specifying sentiment categories -->
+          {% for sentiment in ['positive', 'negative', 'neutral'] %}
+            {% if sentiments[sentiment] %}
+              <div class="sentiment {{ sentiment }}">
+                <h3>{{ sentiment|capitalize }}</h3>
+                <div class="stock-list">
+                  {% for stock in sentiments[sentiment] %}
+                    <p class="stock-item">
+                      <span class="stock-name">{{ stock.Triggered_Stock_Symbols }}</span>
+                    </p>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+
+
+      <section class="features">
+        <article>
+          <h3>Our Feature</h3>
+          <p>Receive update market quickly every time</p>
+          <button>Get Started</button>
+        </article>
+        <article>
+          <h3>How To Use</h3>
+          <p>Easy Way to use</p>
+          <button>Get Started</button>
+        </article>
+      </section>
+      <!-- Add more sections as required -->
+    </main>
+    <footer>
+      <p>All Rights Reserved.</p>
+      <!-- Footer content -->
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/js.js') }}"></script>
+  </body>
+</html>

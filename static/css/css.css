@@ -1,0 +1,752 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+:root {
+    --primary-color: #0056b3;
+    --secondary-color: #007bff;
+    --accent-color: #ffc107;
+    --text-color: #333;
+    --background-color: #f8f9fa;
+    --error-color: #F44336;
+    --error-background-color: #FFEBEE;
+    --navbar-background: #ffffff;
+    --link-hover-color: #0056b3;
+    --box-shadow-color: rgba(0, 0, 0, 0.1);
+    --card-background-color: #ffffff; /* Added for consistency in card backgrounds */
+    --box-shadow-strong: 0 4px 8px rgba(0, 0, 0, 0.2); /* Stronger shadow for depth */
+    --transition-speed: 0.3s; /* Standardize transition speed */
+}
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    overflow-x: hidden; /* Prevents horizontal scroll */
+}
+
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--navbar-background);
+    box-shadow: 0 2px 4px var(--box-shadow-color);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.navbar-nav {
+    display: flex;
+    list-style: none;
+}
+
+.navbar-nav li {
+    padding-left: 20px;
+}
+
+.navbar-nav li a {
+    text-decoration: none;
+    color: var(--text-color);
+    transition: color 0.3s ease-in-out;
+}
+
+.navbar-nav li a:hover {
+    color: var(--link-hover-color);
+}
+
+.navbar-auth {
+    display: flex;
+}
+
+.navbar-auth a {
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+}
+
+.auth-signup {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.auth-signin {
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.auth-signin:hover, .auth-signup:hover {
+    background-color: var(--secondary-color);
+    color: #fff;
+    border-color: var(--secondary-color);
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 2rem;
+    background-image: linear-gradient(to right, #6a11cb, #2575fc);
+    color: #fff;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    width: 120%;
+    height: 120%;
+    top: -10%;
+    left: -10%;
+    background-image: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: rotate(25deg);
+    animation: shine 7s ease-in-out infinite;
+}
+
+@keyframes shine {
+    from {
+        transform: rotate(25deg) translateX(-100%);
+    }
+    to {
+        transform: rotate(25deg) translateX(200%);
+    }
+}
+
+
+.hero-content {
+    max-width: 600px;
+}
+
+.hero-content h1 {
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+}
+
+.hero-content p {
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+}
+
+/* Search Box */
+.search-box {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 2rem;
+}
+
+#hero-stock-search{
+    width: 100%; /* Full width of its container */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px; /* Increased font size for better visibility */
+    margin-bottom: 15px;
+}
+
+#stock-search, #search-button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--box-shadow-color);
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+#search-button {
+    background-color: var(--primary-color);
+    color: #fff;
+    cursor: pointer;
+    border: none;
+}
+
+#search-button:hover {
+    background-color: var(--link-hover-color);
+}
+
+/* Error Message */
+.error-message {
+    margin-top: 1rem;
+    color: var(--error-color);
+    background-color: var(--error-background-color);
+    border: 1px solid var(--error-color);
+    border-radius: 5px;
+    padding: 1rem;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar-nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar-nav li {
+        padding: 0.5rem 0;
+    }
+
+    .hero {
+        flex-direction: column;
+        padding: 2rem 1rem;
+    }
+
+    .search-box {
+        flex-direction: column;
+    }
+
+    #stock-search, #search-button {
+        width: 100%;
+    }
+}
+
+
+/* Dashboard Section */
+.dashboard {
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.financial-details, .search-panel {
+    background: var(--card-background-color);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--box-shadow-color);
+    margin-bottom: 2rem;
+    width: 90%;
+    max-width: 800px;
+}
+
+#stock-search-dash {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.indicator, .indicator-analysis {
+    padding: 10px;
+    margin: 10px 0;
+    background: #e7f5ff;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.indicator.bullish {
+    border-left: 5px solid #4caf50; /* Green for bullish */
+}
+
+.indicator.bearish {
+    border-left: 5px solid #f44336; /* Red for bearish */
+}
+
+
+/* News Information Section */
+.news-information {
+    padding: 2rem 0;
+    background: var(--background-color);
+    width: 90%;
+    max-width: 800px;
+    margin: auto;
+}
+.news-item {
+    border-left: 4px solid transparent; /* Default style, overridden by specific sentiments */
+    padding: 1em;
+    margin-bottom: 1em;
+    transition: all 0.3s ease;
+  }
+  
+  /* Positive news */
+  .news-item.positive {
+    background-color: #ebf9eb; /* Light green */
+    border-color: #238823; /* Dark green */
+  }
+  
+  /* Negative news */
+  .news-item.negative {
+    background-color: #f9ebeb; /* Light red */
+    border-color: #D2222D; /* Dark red */
+  }
+  
+  /* Neutral news */
+  .news-item.neutral {
+    background-color: #fcf8e3; /* Light yellow */
+    border-color: #FFBF00; /* Dark yellow */
+  }
+  
+  /* Additional styles for .news-list, .stock-prices, etc. */
+  
+
+.news-meta {
+    color: var(--secondary-color);
+    font-size: 0.875rem;
+}
+
+/* Sentiment Analysis Section */
+.sentiment-analysis {
+    padding: 2rem 0;
+    background: var(--background-color);
+    width: 100%;
+}
+
+.sentiment-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 1rem;
+}
+
+.sentiment {
+    padding: 1rem;
+    background: var(--card-background-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--box-shadow-color);
+    width: calc(33.333% - 20px);
+    min-width: 250px;
+    margin: 0.5rem;
+}
+
+.sentiment h3 {
+    margin-bottom: 1rem;
+}
+
+.stock-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.stock-item {
+    margin-bottom: 0.5rem;
+}
+
+/* Features Section */
+.features {
+    background: var(--background-color);
+    padding: 2rem 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.features article {
+    background: var(--card-background-color);
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--box-shadow-color);
+    width: calc(50% - 2rem);
+    text-align: center;
+}
+
+.features article h3 {
+    margin-bottom: 1rem;
+}
+
+/* Footer */
+footer {
+    background: var(--primary-color);
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .features article {
+        width: 90%;
+    }
+
+    .sentiment {
+        width: 90%;
+    }
+}
+
+
+
+
+/* Ensure the Sentiment Analysis section itself is centered */
+.sentiment-analysis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f9f9f9;
+    padding: 2em;
+    margin-top: 2em; /* Adjust as needed to ensure it's below the fixed header */
+  }
+  /* Flex container for sentiment analysis boxes */
+  .sentiment-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centers the boxes */
+    gap: 20px; /* Spacing between boxes */
+    padding: 20px;
+    max-width: 1200px; /* Adjust as needed */
+    margin: auto; /* Center the wrapper */
+  }
+
+  /* Individual sentiment boxes with dynamic width */
+  .sentiment {
+    flex: 1; /* Allows boxes to grow */
+    min-width: 250px; /* Minimum width before wrapping */
+    max-width: 350px; /* Maximum width of each box */
+    margin: 10px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Fixed position sentiment name */
+  .sentiment h3 {
+    width: calc(100% - 40px); /* Adjust based on padding */
+    position: sticky;
+    top: 0;
+    background-color: #ffffff;
+    z-index: 10;
+    padding: 10px 20px; /* Same as sentiment padding for alignment */
+    margin: 0; /* Remove default margin */
+    border-bottom: 1px solid #eee; /* Separator */
+  }
+
+  /* Scrollable list of stocks */
+  .stock-list {
+    overflow-y: auto;
+    padding: 20px;
+    height: 240px; /* 8 stock names * 30px */
+    flex-grow: 1; /* Allows the list to fill the remaining space */
+  }
+
+  .stock-item {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  /* Ensure the sentiment name doesn't overlap the scrollbar */
+  .sentiment {
+    padding: 0;
+    /* overflow: hidden; Prevents direct child overflow */
+  }
+
+  /* Color coding for sentiment */
+  .sentiment.positive .stock-item { color: #4CAF50; }
+  .sentiment.neutral .stock-item { color: #FFC107; }
+  .sentiment.negative .stock-item { color: #F44336; }
+
+  /* Additional Styling for Features Section */
+  .features article {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+
+  /* Adjustments for mobile screens */
+  @media (max-width: 768px) {
+    .sentiment-wrapper {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sentiment { max-width: 90%; } /* Full width on smaller screens */
+  }
+
+  /* Footer */
+  footer {
+      background: #333;
+      color: #fff;
+      text-align: center;
+      padding: 1em;
+  }
+
+  footer p {
+      margin: 0;
+  }
+
+  @media (max-width: 768px) {
+      .hero {
+          flex-direction: column;
+          text-align: center;
+      }
+
+      .hero-image {
+          margin-top: 2em;
+      }
+  }
+
+  /* News Information Section */
+  .news-information {
+    padding: 2em;
+    background: #ffffff; /* Choose a background that fits your design */
+}
+
+/* Additions for stock prices */
+.stock-prices {
+    margin-bottom: 1em;
+    padding: 1em;
+    background-color: #f0f0f0; /* Light grey background for emphasis */
+}
+
+.highlight {
+    font-weight: bold;
+    color: #d35400; /* Highlight color, adjust as needed */
+}
+
+  .news-list .news-item {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 1em;
+      margin-bottom: 1em;
+  }
+
+  .news-item h3 {
+      color: #007bff; /* Your theme color */
+      margin-bottom: 0.5em;
+  }
+
+  .news-item .news-meta {
+      font-style: italic;
+      color: #666;
+      margin-bottom: 0.5em;
+  }
+
+  /* Pagination */
+  .pagination {
+      display: flex;
+      justify-content: center;
+      padding: 1em 0;
+  }
+
+  .page-link {
+      padding: 0.5em 1em;
+      margin: 0 0.25em;
+      text-decoration: none;
+      border: 1px solid #ddd;
+      color: #007bff;
+  }
+
+  .page-link:hover {
+      background-color: #f8f9fa;
+  }
+
+/* Form and Select Box Styling */
+form {
+    display: flex;
+    justify-content: center;
+    margin: 2em 0;
+  }
+  
+  select {
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 2px solid #007bff; /* Theme color */
+    outline: none;
+    color: #007bff;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  select:hover,
+  select:focus {
+    border-color: #0056b3; /* Darker shade for hover/focus */
+    box-shadow: 0 0 8px 0 rgba(0,123,255,0.5);
+  }
+  
+  /* Option styles */
+  option {
+    padding: 10px;
+    background: white;
+    border: none;
+  }
+  
+  /* Adding a cool animation on change */
+  select {
+    animation: rotateX 0.5s ease-in-out;
+  }
+  
+  @keyframes rotateX {
+    from {
+      transform: rotateX(0);
+    }
+    to {
+      transform: rotateX(360deg);
+    }
+  }
+  
+
+
+  /* General Styling for the Dashboard Section */
+  .dashboard {
+    display: flex;
+    flex-direction: column; /* Adjust if you want side-by-side layout for larger screens */
+    align-items: center; /* Center align the content for better visual appeal */
+    padding: 2em;
+    background: #f8f9fa;
+  }
+
+  /* Styling for the Search Panel */
+  .search-panel {
+    width: 100%;
+    max-width: 600px; /* Adjust based on your preference */
+    padding: 1em;
+    margin-bottom: 2em; /* Adds space below the search panel */
+    background-color: #fff; /* White background for contrast */
+    /* box-shadow: 0 2px 4px rgba(0,0,0,0.1); Soft shadow for depth */
+    border-radius: 5px;
+  }
+
+  #stock-search-dash {
+    width: 100%; /* Full width of its container */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px; /* Increased font size for better visibility */
+  }
+
+
+  /* Financial Details and Indicators Styling */
+  .financial-details {
+    width: 100%;
+    max-width: 800px; /* Adjust based on your layout needs */
+    background-color: #fff;
+    padding: 1em;
+    border-radius: 5px;
+    /* box-shadow: 0 2px 5px rgba(0,0,0,0.2); */
+  }
+
+  .indicator, .indicator-analysis {
+    background: #e7f5ff; /* Light blue background for indicators */
+    border-radius: 5px;
+    padding: 10px; /* Increased padding for better spacing */
+    margin: 10px 0; /* Increased margin for better separation */
+    display: flex; /* Aligns the span and value side by side */
+    justify-content: space-between;
+    font-weight: bold;/* Separates the label and value */
+  }
+
+  /* Color coding for stock indicators */
+  .indicator.bullish {
+    color: green; /* Green for bullish trend */
+  }
+
+  .indicator.bearish {
+    color: red; /* Red for bearish trend */
+  }
+
+  /* Adjustments for responsiveness */
+  @media (max-width: 768px) {
+    .dashboard, .search-panel, .financial-details {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    #stock-search-dash , button {
+      width: 100%;
+      margin-bottom: 10px; /* Reset margin for button on smaller screens */
+    }
+
+
+    #stock-search-dash::placeholder {
+        color: #888; / Placeholder text color */
+    }
+      .search-box {
+        display: flex;
+        width: 100%; / Ensure full width usage /
+        align-items: center; / Vertically aligns search input and button */
+        }
+
+        /* Remove the box-shadow as requested */
+        #search-results {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 1em;
+        background-color: #fff;
+        }
+
+  }
+
+
+
+
+  button {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+button:hover,
+button:focus {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px); /* Lift effect */
+}
+
+button:active {
+    transform: translateY(1px); /* Pressed effect */
+}
+
+
+/* Adjust margins between sections and elements for clarity */
+section + section {
+    margin-top: 4rem; /* Adds more space between sections */
+}
+
+
+
+.card, .financial-details, .search-panel, .news-item, .sentiment, .features article {
+    background-color: var(--card-background-color);
+    border-radius: 8px;
+    box-shadow: var(--box-shadow-color);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.card:hover, .financial-details:hover, .search-panel:hover, .news-item:hover, .sentiment:hover, .features article:hover {
+    transform: translateY(-5px); /* Subtle floating effect */
+    box-shadow: var(--box-shadow-hover);
+}
+
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+    }
+
+    .hero, .dashboard, .features, .sentiment-analysis, .news-information {
+        padding: 2rem 1rem; /* Adjust padding for smaller screens */
+    }
+
+    .card, .financial-details, .search-panel, .news-item, .sentiment, .features article {
+        margin: 1rem; /* Ensure margins are responsive */
+    }
+}
