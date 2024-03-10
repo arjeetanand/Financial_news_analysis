@@ -1,13 +1,19 @@
 from datetime import datetime, date
 import numpy as np
 from flask import Flask, render_template, request, jsonify, Response
-from flask.json import JSONEncoder
+from json import JSONEncoder
 import pandas as pd
 import subprocess
 import logging
 from flask_caching import Cache
 import math
+from datetime import datetime, timedelta
+
 import json
+
+import warnings
+
+warnings.filterwarnings("ignore", message=".*This is a development server.*")
 
 
 # Set up basic logging

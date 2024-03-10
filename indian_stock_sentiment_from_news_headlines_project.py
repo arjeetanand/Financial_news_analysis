@@ -23,8 +23,19 @@ import pandas as pd
 from dateutil import parser
 from io import BytesIO
 
+import warnings
 
-def scrape_news_data(base_url, start_path, from_site, max_pages=2):
+warnings.filterwarnings(
+    "ignore", message=".*UnknownTimezoneWarning.*"
+)  # Ignore for now (handle time zone if needed)
+warnings.filterwarnings(
+    "ignore", message=".*torch.utils._pytree._register_pytree_node.*"
+)  # Ignore for now (update code later)
+
+warnings.filterwarnings("ignore", message=".*This is a development server.*")
+
+
+def scrape_news_data(base_url, start_path, from_site, max_pages=9):
     def get_news_items(soup, site):
         if site == "economic_times":
             return soup.find_all("div", class_="eachStory"), lambda item: (
@@ -96,7 +107,7 @@ et_news_data = scrape_news_data(
     "https://economictimes.indiatimes.com", "/markets/stocks/news", "economic_times", 1
 )
 mc_news_data = scrape_news_data(
-    "https://www.moneycontrol.com", "/news/business/stocks/", "moneycontrol", 1
+    "https://www.moneycontrol.com", "/news/business/stocks/", "moneycontrol", 7
 )
 
 save_news_data_to_file(et_news_data, "economic_times_summaries.txt")
@@ -333,6 +344,13 @@ def get_trading_days(data, base_date):
     return before_date, base_date, after_date
 
 
+# data = yf.download(
+#     symbol,
+#     start=base_date - pd.Timedelta(days=10),
+#     end=base_date + pd.Timedelta(days=10),
+# )
+
+
 def get_stock_prices(symbol, base_date):
     if pd.isna(symbol):
         return np.nan, np.nan, np.nan
@@ -515,6 +533,7 @@ for index, row in df.iterrows():
                 macd, signal = calculate_macd(data["Close"])
                 df.at[index, "MACD"] = macd.iloc[-1]
                 df.at[index, "MACD_Signal"] = signal.iloc[-1]
+
     except Exception as e:
         print(f"Error processing symbol: {symbol}")
         print(f"Start date: {start_date}, End date: {end_date}")
@@ -569,3 +588,7 @@ df["SMA_Analysis"] = df.apply(
 df["RSI_Analysis"] = df["RSI"].apply(interpret_rsi)
 
 df.to_excel("updated_final.xlsx", index=False)
+
+
+# Load the existing Excel file
+existing_data = pd.read_excel("updated_final.xlsx")
