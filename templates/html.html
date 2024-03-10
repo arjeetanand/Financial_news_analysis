@@ -19,7 +19,7 @@
           </li> <!-- Changes here -->
           <li><a href="#news-information">News</a></li> <!-- Link to News section -->
           <li><a href="#dashboard">Analysis</a></li> <!-- Link to Dashboard section -->
-          <li><a href="#help">Help</a></li>
+          
         </ul>
         <!-- <div class="navbar-auth">
           <a href="#signup" class="auth-signup">Sign Up</a>
@@ -33,7 +33,7 @@
 
       <section class="hero">
         <div class="hero-content">
-          <h1>Invest Your Money Wisely</h1>
+          <h1>Empowering Informed Investment Decisions</h1>
           <button id="runScriptBtn">Run Script</button>
           <div id="loadingModal" class="modal">
             <div class="modal-content">
@@ -45,8 +45,10 @@
           <div id="loadingMessage" style="display: none;">Loading... Please wait.</div>
           <div id="dataDisplay"></div>
 
-          
-          <p>Maximize your investment with our cutting-edge platform.</p>
+          <br>
+          <p>Explore Financial Analysis Trends</p>
+          <i>How to Use: Navigate through the different indicators such as SMA (Simple Moving Average), RSI (Relative Strength Index), and MACD (Moving Average Convergence Divergence) & Stock news to gauge market trends.</i>
+          <br>Example: Enter the name of a stock in the search bar, such as "Tata Steel" or "PNB," to access its financial analysis trends. If the stock name is not found that means no recent news is available, the platform will display an error message.
           <form id="hero-stock-search-form" onsubmit="heroPerformSearch(event)">
             <div class="hero-search-box">
               <input
@@ -74,6 +76,8 @@
         <div class="financial-details">
 
           <h2>Financial Analysis Trends</h2>
+          <br>
+          <i>How to Use: Enter a stock name (e.g., "TCS") in the search bar and click "Search" to view its SMA, RSI, and MACD indicators. Interpret the values to assess market trends. </i>
           <aside class="search-panel">
             <form action="{{ url_for('dashboard') }}" method="get">
               <div class="search-box">
@@ -129,8 +133,9 @@
 
 
       <section class="news-information" id="news-information">
-        <h2>News Information</h2>
-
+        <h2>Stay Informed with News Updates</h2>
+        <br>
+        <i>How to Use: Scroll through the list of available stock names to see which stocks have recent news articles associated with them. Click on a stock name to access its corresponding news updates. If a stock name is not listed, it means there are no recent news articles available for that stock. Stay informed for better investment decisions.</i>
         
         <form action="/" method="get">
           <select name="news_symbol" onchange="this.form.submit()">
@@ -186,7 +191,9 @@
       </section>
 
       <section class="sentiment-analysis">
-        <h2>Sentiment Analysis</h2>
+        <h2>Understand Sentiment Analysis</h2>
+        <br>
+        <i> How to Use: Check the list of stocks categorized by sentiment - positive, negative, or neutral. Gain insights into market sentiment by analyzing the sentiment associated with each stock. </i>
         <div class="sentiment-wrapper">
           <!-- Ensure fixed order by manually specifying sentiment categories -->
           {% for sentiment in ['positive', 'negative', 'neutral'] %}
@@ -207,22 +214,10 @@
       </section>
 
 
-      <section class="features">
-        <article>
-          <h3>Our Feature</h3>
-          <p>Receive update market quickly every time</p>
-          <button>Get Started</button>
-        </article>
-        <article>
-          <h3>How To Use</h3>
-          <p>Easy Way to use</p>
-          <button>Get Started</button>
-        </article>
-      </section>
       <!-- Add more sections as required -->
     </main>
     <footer>
-      <p>All Rights Reserved.</p>
+      <p>Made with ❤️ by <b>Arjeet Anand.</b></p>
       <!-- Footer content -->
     </footer>
 
