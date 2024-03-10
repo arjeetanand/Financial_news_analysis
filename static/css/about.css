@@ -1,19 +1,34 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* About Section */
 .about-section {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
+    padding: 2rem 0;
 }
 
 .about-content {
     display: flex;
-    align-items: center;
-    justify-content: space-around;
+    align-items: flex-start; /* Adjusted alignment */
+    justify-content: space-between;
     gap: 20px;
 }
 
 .about-text {
-    flex: 1;
     max-width: 600px;
 }
 
@@ -21,16 +36,63 @@
     width: 300px;
     height: auto;
     border-radius: 10px;
-    box-shadow: 0 4px 8px var(--box-shadow-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Social Media Icons */
+.social-media-handles {
+    margin-top: 20px;
+}
+
+.social-media-handles a {
+    color: #333;
+    font-size: 24px;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+}
+
+.social-media-handles a:hover {
+    color: #007bff;
+}
+
+/* Buttons */
+button {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover,
+button:focus {
+    background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .about-section {
+        padding: 2rem;
+    }
+
     .about-content {
         flex-direction: column;
         text-align: center;
+        align-items: center;
     }
+
     .about-image img {
         margin-top: 20px;
     }
 }
+
+
+  
+  .back-button a {
+    text-decoration: none;
+    color: white;
+  }
+
