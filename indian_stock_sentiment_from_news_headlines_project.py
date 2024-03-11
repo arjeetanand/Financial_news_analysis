@@ -13,6 +13,7 @@ import requests
 from transformers import pipeline
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline
+
 # import matplotlib.pyplot as plt
 import io
 import re
@@ -100,7 +101,9 @@ def combine_and_save_dataframes_parquet(df1, df2, output_path):
     combined_df["Date_Time"] = pd.to_datetime(
         combined_df["Date_Time"].apply(lambda x: parser.parse(x))
     )
-    combined_df.to_parquet(output_path.replace(".xlsx", ".parquet"), index=False)
+    combined_df.to_parquet(
+        output_path.replace(".xlsx", ".parquet"), index=False, engine="fastparquet"
+    )
 
 
 et_news_data = scrape_news_data(
@@ -417,7 +420,7 @@ df_exploded["Price_Day_Before_Targeted"] = df_exploded["Targeted_Date"] - pd.Tim
 
 print(df_exploded)
 
-df_exploded.to_parquet("final.parquet", index=False)
+df_exploded.to_parquet("final.parquet", index=False, engine="fastparquet")
 
 # Load your Excel file
 df = pd.read_parquet("final.parquet")
