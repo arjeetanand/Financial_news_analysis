@@ -29,11 +29,6 @@ import warnings
 warnings.filterwarnings(
     "ignore", message=".*UnknownTimezoneWarning.*"
 )  # Ignore for now (handle time zone if needed)
-warnings.filterwarnings(
-    "ignore", message=".*torch.utils._pytree._register_pytree_node.*"
-)  # Ignore for now (update code later)
-
-warnings.filterwarnings("ignore", message=".*This is a development server.*")
 
 
 def scrape_news_data(base_url, start_path, from_site, max_pages=9):
@@ -193,13 +188,6 @@ combined_news_df["Adjusted_Sentiment"] = combined_news_df.apply(
     lambda row: adjust_sentiment_with_rules(row["Summary"], row["Sentiment"]), axis=1
 )
 
-# # Plotting the sentiment distribution
-# combined_news_df["Adjusted_Sentiment"].value_counts().plot(
-#     kind="bar", title="Sentiment Distribution", xlabel="Sentiment", ylabel="Count"
-# ).set_xticklabels(labels=combined_news_df["Adjusted_Sentiment"].unique(), rotation=0)
-# plt.tight_layout()
-# plt.show()
-
 
 def clean_company_name(name):
     suffixes = "|".join([" Limited", " Ltd", "BSE", "(BSE)", "NSE", " LTD", " LIMITED"])
@@ -347,13 +335,6 @@ def get_trading_days(data, base_date):
     return before_date, base_date, after_date
 
 
-# data = yf.download(
-#     symbol,
-#     start=base_date - pd.Timedelta(days=10),
-#     end=base_date + pd.Timedelta(days=10),
-# )
-
-
 def get_stock_prices(symbol, base_date):
     if pd.isna(symbol):
         return np.nan, np.nan, np.nan
@@ -376,12 +357,19 @@ def get_stock_prices(symbol, base_date):
     return before_price, present_price, after_price
 
 
-df_exploded["Date_Time"] = pd.to_datetime(df_exploded["Date_Time"])
+import pytz
+
+ist_timezone = pytz.timezone("Asia/Kolkata")  # Use the correct time zone for IST
+df_exploded["Date_Time"] = pd.to_datetime(
+    df_exploded["Date_Time"], utc=True
+).dt.tz_convert(ist_timezone)
 df_exploded["Date"] = df_exploded["Date_Time"].dt.date
 df_exploded["Time"] = df_exploded["Date_Time"].dt.time
 
 # Assuming df_exploded is your DataFrame and 'Date' column is in datetime format
-df_exploded["Date"] = pd.to_datetime(df_exploded["Date"])
+df_exploded["Date"] = pd.to_datetime(df_exploded["Date"], utc=True).dt.tz_convert(
+    ist_timezone
+)
 df_exploded[["News_Day_Before", "News_day", "News_Day_After"]] = df_exploded.apply(
     lambda row: pd.Series(
         get_stock_prices(row["Triggered_Stock_Symbols"], row["Date"])
@@ -391,7 +379,9 @@ df_exploded[["News_Day_Before", "News_day", "News_Day_After"]] = df_exploded.app
 
 
 # Ensure 'Date_Time' is a datetime column
-df_exploded["Date_Time"] = pd.to_datetime(df_exploded["Date_Time"])
+df_exploded["Date_Time"] = pd.to_datetime(
+    df_exploded["Date_Time"], utc=True
+).dt.tz_convert(ist_timezone)
 
 
 # Function to adjust date based on the time
@@ -411,7 +401,9 @@ def adjust_date(row):
 df_exploded["Targeted_Date"] = df_exploded.apply(adjust_date, axis=1).dt.date
 
 # First, ensure 'Targeted_Date' is a datetime object
-df_exploded["Targeted_Date"] = pd.to_datetime(df_exploded["Targeted_Date"])
+df_exploded["Targeted_Date"] = pd.to_datetime(
+    df_exploded["Targeted_Date"], utc=True
+).dt.tz_convert(ist_timezone)
 
 # Calculate 'Price_Day_Before_Targeted' by subtracting one day from 'Targeted_Date'
 df_exploded["Price_Day_Before_Targeted"] = df_exploded["Targeted_Date"] - pd.Timedelta(
@@ -589,6 +581,4 @@ df["RSI_Analysis"] = df["RSI"].apply(interpret_rsi)
 
 df.to_excel("updated_final.xlsx", index=False)
 
-
-# Load the existing Excel file
 existing_data = pd.read_excel("updated_final.xlsx")
