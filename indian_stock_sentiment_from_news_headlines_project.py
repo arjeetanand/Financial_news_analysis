@@ -13,7 +13,7 @@ import requests
 from transformers import pipeline
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import io
 import re
 from datetime import timedelta
@@ -414,9 +414,6 @@ df_exploded["Targeted_Date"] = pd.to_datetime(df_exploded["Targeted_Date"])
 df_exploded["Price_Day_Before_Targeted"] = df_exploded["Targeted_Date"] - pd.Timedelta(
     days=1
 )
-
-# Convert 'Price_Day_Before_Targeted' back to date format if needed
-# df_exploded['Price_Day_Before_Targeted'] = df_exploded['Price_Day_Before_Targeted'].dt.date
 
 print(df_exploded)
 
