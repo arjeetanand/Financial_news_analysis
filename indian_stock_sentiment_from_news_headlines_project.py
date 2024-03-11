@@ -102,7 +102,7 @@ def combine_and_save_dataframes_parquet(df1, df2, output_path):
         combined_df["Date_Time"].apply(lambda x: parser.parse(x))
     )
     combined_df.to_parquet(
-        output_path.replace(".xlsx", ".parquet"), index=False, engine="fastparquet"
+        output_path.replace(".xlsx", ".parquet"), index=False, engine="pyarrow"
     )
 
 
@@ -420,7 +420,7 @@ df_exploded["Price_Day_Before_Targeted"] = df_exploded["Targeted_Date"] - pd.Tim
 
 print(df_exploded)
 
-df_exploded.to_parquet("final.parquet", index=False, engine="fastparquet")
+df_exploded.to_parquet("final.parquet", index=False, engine="pyarrow")
 
 # Load your Excel file
 df = pd.read_parquet("final.parquet")
