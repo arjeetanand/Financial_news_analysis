@@ -1,4 +1,4 @@
-fastparquet==2024.2.0
+pyarrow==15.0.1
 appdirs==1.4.4
 beautifulsoup4==4.12.3
 blinker==1.7.0
