@@ -107,7 +107,7 @@ et_news_data = scrape_news_data(
     "https://economictimes.indiatimes.com", "/markets/stocks/news", "economic_times", 1
 )
 mc_news_data = scrape_news_data(
-    "https://www.moneycontrol.com", "/news/business/stocks/", "moneycontrol", 7
+    "https://www.moneycontrol.com", "/news/business/stocks/", "moneycontrol", 2
 )
 
 save_news_data_to_file(et_news_data, "economic_times_summaries.txt")
