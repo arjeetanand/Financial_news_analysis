@@ -188,6 +188,24 @@ python -m mlops.pipeline_cli \
   --label-col True_Symbol
 ```
 
+### Part 4 (implemented): Demonstrate measurable business value
+
+What is now included:
+- `mlops/business_value.py`: event-study backtest helpers for sentiment vs. forward returns.
+- Reported metrics include `coverage`, `hit_rate`, `average_forward_return`, `strategy_mean_return`, and `strategy_sharpe_like`.
+- Sentiment calibration table generation (bucket counts + mean forward return).
+- `mlops/pipeline_cli.py` supports `--run-backtest`, `--entry-price-col`, `--exit-price-col`, and records backtest outputs in lineage.
+
+Example:
+
+```bash
+python -m mlops.pipeline_cli \
+  --input updated_final.xlsx \
+  --run-backtest \
+  --entry-price-col News_day \
+  --exit-price-col News_Day_After
+```
+
 ---
 
 To elevate this from a good student project to a strong AI/ML engineer portfolio project:
