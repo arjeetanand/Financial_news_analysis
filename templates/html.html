@@ -15,23 +15,18 @@
         <div class="navbar-brand">Market Analyzer</div>
         <ul class="navbar-nav">
           <li><a href="#home">Home</a></li>
-          <li><a href="{{ url_for('about') }}">About Us</a>
-          </li> <!-- Changes here -->
-          <li><a href="#news-information">News</a></li> <!-- Link to News section -->
-          <li><a href="#dashboard">Analysis</a></li> <!-- Link to Dashboard section -->
-          
+          <li><a href="{{ url_for('about') }}">About Us</a></li>
+          <li><a href="#news-information">News</a></li>
+          <li><a href="#dashboard">Analysis</a></li>
+          <li><a href="#trade-setups">Trade Setups</a></li>
+          <li><a href="#fund-finder">Fund Finder</a></li>
+          <li><a href="#backtesting">Backtest</a></li>
         </ul>
-        <!-- <div class="navbar-auth">
-          <a href="#signup" class="auth-signup">Sign Up</a>
-          <a href="#signin" class="auth-signin">Sign In</a>
-        </div> -->
-    </nav>
-
+      </nav>
     </header>
 
     <main>
-
-      <section class="hero">
+      <section class="hero" id="home">
         <div class="hero-content">
           <h1>Empowering Informed Investment Decisions</h1>
           <button id="runScriptBtn">Run Script</button>
@@ -40,15 +35,21 @@
               <p>Please wait...</p>
             </div>
           </div>
-          <button id="reloadPageBtn" style="display: none;">Reload Page</button>
+          <button id="reloadPageBtn" style="display: none">Reload Page</button>
 
-          <div id="loadingMessage" style="display: none;">Loading... Please wait.</div>
+          <div id="loadingMessage" style="display: none">Loading... Please wait.</div>
           <div id="dataDisplay"></div>
 
-          <br>
+          <br />
           <p>Explore Financial Analysis Trends</p>
-          <i>How to Use: Navigate through the different indicators such as SMA (Simple Moving Average), RSI (Relative Strength Index), and MACD (Moving Average Convergence Divergence) & Stock news to gauge market trends.</i>
-          <br>Example: Enter the name of a stock in the search bar, such as "Tata Steel" or "PNB," to access its financial analysis trends. If the stock name is not found that means no recent news is available, the platform will display an error message.
+          <i
+            >How to Use: Navigate through the different indicators such as SMA
+            (Simple Moving Average), RSI (Relative Strength Index), and MACD
+            (Moving Average Convergence Divergence) & Stock news to gauge market
+            trends.</i
+          >
+          <br />Example: Enter the name of a stock in the search bar, such as "Tata
+          Steel" or "PNB," to access its financial analysis trends.
           <form id="hero-stock-search-form" onsubmit="heroPerformSearch(event)">
             <div class="hero-search-box">
               <input
@@ -63,21 +64,18 @@
               <div class="dropdown-content" id="hero-dropdown-content"></div>
             </div>
           </form>
-          <div id="hero-stock-details" style="display: none;">
-            <!-- hey hello -->
-
-            <!-- Stock details will be populated by JavaScript -->
-          </div>
+          <div id="hero-stock-details" style="display: none"></div>
         </div>
       </section>
 
-
       <section id="dashboard" class="dashboard">
         <div class="financial-details">
-
           <h2>Financial Analysis Trends</h2>
-          <br>
-          <i>How to Use: Enter a stock name (e.g., "TCS") in the search bar and click "Search" to view its SMA, RSI, and MACD indicators. Interpret the values to assess market trends. </i>
+          <br />
+          <i
+            >How to Use: Enter a stock name (e.g., "TCS") in the search bar and
+            click "Search" to view indicators.</i
+          >
           <aside class="search-panel">
             <form action="{{ url_for('dashboard') }}" method="get">
               <div class="search-box">
@@ -104,25 +102,14 @@
             <div class="indicator {{ stock_data.get('trend', '') }}">
               <span>SMA 50:</span> {{ stock_data.get('SMA_50', 'N/A') }}
             </div>
+            <div class="indicator"><span>RSI:</span> {{ stock_data.get('RSI', 'N/A') }}</div>
+            <div class="indicator"><span>MACD:</span> {{ stock_data.get('MACD', 'N/A') }}</div>
             <div class="indicator">
-              <span>RSI:</span> {{ stock_data.get('RSI', 'N/A') }}
+              <span>MACD Signal:</span> {{ stock_data.get('MACD_Signal', 'N/A') }}
             </div>
-            <div class="indicator">
-              <span>MACD:</span> {{ stock_data.get('MACD', 'N/A') }}
-            </div>
-            <div class="indicator">
-              <span>MACD Signal:</span> {{ stock_data.get('MACD_Signal', 'N/A')
-              }}
-            </div>
-            <div class="indicator-analysis">
-              {{ stock_data.get('MACD_Analysis', '') }}
-            </div>
-            <div class="indicator-analysis">
-              {{ stock_data.get('SMA_Analysis', '') }}
-            </div>
-            <div class="indicator-analysis">
-              {{ stock_data.get('RSI_Analysis', '') }}
-            </div>
+            <div class="indicator-analysis">{{ stock_data.get('MACD_Analysis', '') }}</div>
+            <div class="indicator-analysis">{{ stock_data.get('SMA_Analysis', '') }}</div>
+            <div class="indicator-analysis">{{ stock_data.get('RSI_Analysis', '') }}</div>
             {% else %}
             <p>No stock information found for the query.</p>
             {% endif %}
@@ -130,26 +117,170 @@
         </div>
       </section>
 
+      <section class="feature-section" id="trade-setups">
+        <h2>AI Trade Setup Score (Top Picks)</h2>
+        <div class="card-grid">
+          {% for setup in top_trade_setups %}
+          <article class="feature-card">
+            <h3>{{ setup.symbol }}</h3>
+            <p><strong>Score:</strong> {{ setup.trade_setup_score }}</p>
+            <p><strong>Sentiment:</strong> {{ setup.sentiment_component }}</p>
+            <p><strong>Trend:</strong> {{ setup.trend_component }}</p>
+            <p><strong>RSI Fit:</strong> {{ setup.rsi_component }}</p>
+            <p><strong>Risk Penalty:</strong> {{ setup.risk_penalty }}</p>
+            <ul>
+              {% for reason in setup.explanations %}
+              <li>{{ reason }}</li>
+              {% endfor %}
+            </ul>
+          </article>
+          {% else %}
+          <p>No setups available.</p>
+          {% endfor %}
+        </div>
+      </section>
 
+      <section class="feature-section" id="fund-finder">
+        <h2>Best Mutual Fund Finder (Model Funds)</h2>
+        <p>
+          These are model funds built from current signal strength to rank Now +
+          Future performance potential.
+        </p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Fund</th>
+                <th>Now Score</th>
+                <th>Future Score</th>
+                <th>Combined</th>
+                <th>Avg Risk Penalty</th>
+                <th>Top Holdings</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for fund in model_funds %}
+              <tr>
+                <td>{{ fund.fund_name }}</td>
+                <td>{{ fund.now_score }}</td>
+                <td>{{ fund.future_score }}</td>
+                <td>{{ fund.combined_score }}</td>
+                <td>{{ fund.avg_risk_penalty }}</td>
+                <td>{{ fund.holdings }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="6">No model funds available.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="feature-section" id="backtesting">
+        <h2>Backtesting Lab</h2>
+        <form action="{{ url_for('dashboard') }}#backtesting" method="get" class="stack-form">
+          <input
+            type="text"
+            name="backtest_symbol"
+            placeholder="Optional symbol (e.g. TCS)"
+            value="{{ backtest_symbol }}"
+          />
+          <input
+            type="number"
+            name="min_score"
+            min="0"
+            max="100"
+            value="{{ min_score }}"
+          />
+          <button type="submit">Run Backtest</button>
+        </form>
+
+        <div class="metric-row">
+          <div class="metric-card"><h4>Trades</h4><p>{{ backtest_result.trades }}</p></div>
+          <div class="metric-card"><h4>Win Rate</h4><p>{{ backtest_result.win_rate }}%</p></div>
+          <div class="metric-card"><h4>Avg Return</h4><p>{{ backtest_result.avg_return }}%</p></div>
+          <div class="metric-card"><h4>Total Return</h4><p>{{ backtest_result.total_return }}%</p></div>
+        </div>
+        <p>{{ backtest_result.message }}</p>
+      </section>
+
+      <section class="feature-section" id="alerts">
+        <h2>Smart Alerts</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Risk</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for alert in alerts %}
+              <tr>
+                <td>{{ alert.symbol }}</td>
+                <td>{{ alert.level }}</td>
+                <td>{{ alert.score }}</td>
+                <td>{{ alert.risk_penalty }}</td>
+                <td>{{ alert.message }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="5">No alerts right now.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="feature-section" id="overlap-checker">
+        <h2>Portfolio Overlap Checker</h2>
+        <form action="{{ url_for('dashboard') }}#overlap-checker" method="get" class="stack-form">
+          <input
+            type="text"
+            name="base_symbols"
+            placeholder="Base portfolio symbols (comma separated)"
+            value="{{ base_symbols }}"
+          />
+          <input
+            type="text"
+            name="candidate_symbols"
+            placeholder="Candidate fund symbols (comma separated)"
+            value="{{ candidate_symbols }}"
+          />
+          <button type="submit">Check Overlap</button>
+        </form>
+
+        <div class="metric-row">
+          <div class="metric-card"><h4>Overlap Count</h4><p>{{ overlap_result.overlap_count }}</p></div>
+          <div class="metric-card"><h4>Overlap Ratio</h4><p>{{ overlap_result.overlap_ratio }}%</p></div>
+          <div class="metric-card"><h4>Diversification Gain</h4><p>{{ overlap_result.diversification_gain if overlap_result.diversification_gain is defined else 0 }}%</p></div>
+        </div>
+        <p><strong>Common Symbols:</strong> {{ overlap_result.common_symbols|join(', ') }}</p>
+        <p>{{ overlap_result.message }}</p>
+      </section>
 
       <section class="news-information" id="news-information">
         <h2>Stay Informed with News Updates</h2>
-        <br>
-        <i>How to Use: Scroll through the list of available stock names to see which stocks have recent news articles associated with them. Click on a stock name to access its corresponding news updates. If a stock name is not listed, it means there are no recent news articles available for that stock. Stay informed for better investment decisions.</i>
-        
+        <br />
+        <i>Use the stock selector to filter relevant headlines.</i>
+
         <form action="/" method="get">
           <select name="news_symbol" onchange="this.form.submit()">
-              <option value="">All Stocks</option>
-              {% for symbol in unique_stock_symbols %}
-                  <option value="{{ symbol }}" {% if request.args.get('news_symbol') == symbol %}selected{% endif %}>{{ symbol }}</option>
-                  
-              {% endfor %}
+            <option value="">All Stocks</option>
+            {% for symbol in unique_stock_symbols %}
+            <option value="{{ symbol }}" {% if request.args.get('news_symbol') == symbol %}selected{% endif %}>{{ symbol }}</option>
+            {% endfor %}
           </select>
         </form>
 
-    
         <div class="news-list">
-            {% for news in news_list %}
+          {% for news in news_list %}
           <article class="news-item {{ news.Sentiment|lower }}">
             <h3>{{ news.Headline }}</h3>
             <p class="news-meta">Date: {{ news.Date }} | Time: {{ news.Time }}</p>
@@ -157,68 +288,45 @@
             <div class="triggered-stocks"><b>Triggered Stocks:</b> {{ news.Triggered_Stock_Names }}</div>
             {% if stock_prices.price_day_before and stock_prices.price_day_of %}
             <div class="stock-prices">
-              
               <p>Price Day Before: <span class="highlight">{{ stock_prices.price_day_before }}</span></p>
               <p>Price Day Of: <span class="highlight">{{ stock_prices.price_day_of }}</span></p>
             </div>
             {% endif %}
           </article>
           {% endfor %}
-
         </div>
-
-        <!-- Pagination could be dynamically generated or managed via JavaScript or server-side logic -->
 
         <div class="pagination">
           {% if page > 1 %}
-          <a href="{{ url_for('dashboard', page=1) }}" class="page-link"
-            >First</a
-          >
-          <a href="{{ url_for('dashboard', page=page-1) }}" class="page-link"
-            >&laquo; Previous</a
-          >
-          {% endif %}
-          <!-- Existing page links -->
-          {% if page < pages %}
-          <a href="{{ url_for('dashboard', page=page+1) }}" class="page-link"
-            >Next &raquo;</a
-          >
-          <a href="{{ url_for('dashboard', page=pages) }}" class="page-link"
-            >Last</a
-          >
+          <a href="{{ url_for('dashboard', page=1) }}" class="page-link">First</a>
+          <a href="{{ url_for('dashboard', page=page-1) }}" class="page-link">&laquo; Previous</a>
+          {% endif %} {% if page < pages %}
+          <a href="{{ url_for('dashboard', page=page+1) }}" class="page-link">Next &raquo;</a>
+          <a href="{{ url_for('dashboard', page=pages) }}" class="page-link">Last</a>
           {% endif %}
         </div>
       </section>
 
       <section class="sentiment-analysis">
         <h2>Understand Sentiment Analysis</h2>
-        <br>
-        <i> How to Use: Check the list of stocks categorized by sentiment - positive, negative, or neutral. Gain insights into market sentiment by analyzing the sentiment associated with each stock. </i>
+        <br />
+        <i>Check stocks categorized by positive, negative, and neutral sentiment.</i>
         <div class="sentiment-wrapper">
-          <!-- Ensure fixed order by manually specifying sentiment categories -->
-          {% for sentiment in ['positive', 'negative', 'neutral'] %}
-            {% if sentiments[sentiment] %}
-              <div class="sentiment {{ sentiment }}">
-                <h3>{{ sentiment|capitalize }}</h3>
-                <div class="stock-list">
-                  {% for stock in sentiments[sentiment] %}
-                    <p class="stock-item">
-                      <span class="stock-name">{{ stock.Triggered_Stock_Symbols }}</span>
-                    </p>
-                  {% endfor %}
-                </div>
-              </div>
-            {% endif %}
-          {% endfor %}
+          {% for sentiment in ['positive', 'negative', 'neutral'] %} {% if sentiments[sentiment] %}
+          <div class="sentiment {{ sentiment }}">
+            <h3>{{ sentiment|capitalize }}</h3>
+            <div class="stock-list">
+              {% for stock in sentiments[sentiment] %}
+              <p class="stock-item"><span class="stock-name">{{ stock.Triggered_Stock_Symbols }}</span></p>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %} {% endfor %}
         </div>
       </section>
-
-
-      <!-- Add more sections as required -->
     </main>
     <footer>
       <p>Made with ❤️ by <b>Arjeet Anand.</b></p>
-      <!-- Footer content -->
     </footer>
 
     <script src="{{ url_for('static', filename='js/js.js') }}"></script>

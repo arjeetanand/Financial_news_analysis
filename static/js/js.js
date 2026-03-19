@@ -87,6 +87,8 @@ function displayStockDetails(data, elementId) {
       <p><strong>MACD Signal:</strong> ${stock.MACD_Signal || 'N/A'}</p>
       <p><strong>Sentiment:</strong> ${stock.Sentiment || 'N/A'}</p>
       <p><strong>Adjusted Sentiment:</strong> ${stock.Adjusted_Sentiment || 'N/A'}</p>
+      <p><strong>Trade Setup Score:</strong> ${stock.Trade_Setup_Score || 'N/A'}</p>
+      <p><strong>Why this setup:</strong> ${stock.Trade_Explainability || 'N/A'}</p>
   `;
 
   detailsContainer.innerHTML = content;
