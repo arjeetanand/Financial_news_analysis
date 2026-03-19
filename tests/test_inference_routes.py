@@ -63,3 +63,30 @@ def test_infer_news_requires_content():
 
     assert response.status_code == 400
     assert "error" in response.get_json()
+
+
+def test_sentiment_trend_endpoint_returns_time_series():
+    df = pd.DataFrame(
+        [
+            {
+                "Triggered_Stock_Symbols": "TCS",
+                "Triggered_Stock_Names": "Tata Consultancy Services",
+                "Sentiment": "Positive",
+                "Date_Time": "2026-03-10T10:00:00",
+            },
+            {
+                "Triggered_Stock_Symbols": "INFY",
+                "Triggered_Stock_Names": "Infosys",
+                "Sentiment": "Negative",
+                "Date_Time": "2026-03-10T11:00:00",
+            },
+        ]
+    )
+    client = _client_with_df(df)
+
+    response = client.get("/api/v1/sentiment_trend")
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert isinstance(payload, list)
+    assert any(item["Trend_Sentiment"] == "positive" for item in payload)

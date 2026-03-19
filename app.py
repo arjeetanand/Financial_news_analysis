@@ -182,6 +182,32 @@ def stock_details(symbol):
     return Response(json_data, mimetype="application/json")
 
 
+@app.route("/api/v1/sentiment_trend")
+def sentiment_trend():
+    trend_df = df.copy()
+    if "Date_Time" in trend_df.columns:
+        trend_df["Trend_Date"] = pd.to_datetime(trend_df["Date_Time"], errors="coerce").dt.date
+    elif "Date" in trend_df.columns:
+        trend_df["Trend_Date"] = pd.to_datetime(trend_df["Date"], errors="coerce").dt.date
+    else:
+        return jsonify([])
+
+    if "Sentiment" in trend_df.columns:
+        trend_df["Trend_Sentiment"] = trend_df["Sentiment"].astype(str).str.lower()
+    else:
+        trend_df["Trend_Sentiment"] = "unknown"
+    trend_df = trend_df.dropna(subset=["Trend_Date"])
+
+    grouped = (
+        trend_df.groupby(["Trend_Date", "Trend_Sentiment"], as_index=False)
+        .size()
+        .rename(columns={"size": "count"})
+        .sort_values(["Trend_Date", "Trend_Sentiment"])
+    )
+    grouped["Trend_Date"] = grouped["Trend_Date"].astype(str)
+    return jsonify(grouped.to_dict(orient="records"))
+
+
 @app.route("/api/v1/inference/sentiment", methods=["POST"])
 def infer_sentiment():
     payload = request.get_json(silent=True) or {}

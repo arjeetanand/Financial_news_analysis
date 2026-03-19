@@ -135,3 +135,58 @@ document.querySelector('select[name="news_symbol"]').addEventListener('change', 
       this.style.transform = "scale(10)";
     }, 10);
   });
+
+function loadSentimentTrendChart() {
+  const chartEl = document.getElementById('sentimentTrendChart');
+  if (!chartEl || typeof Chart === 'undefined') {
+    return;
+  }
+
+  fetch('/api/v1/sentiment_trend')
+    .then((response) => response.json())
+    .then((rows) => {
+      const byDate = {};
+      rows.forEach((row) => {
+        const date = row.Trend_Date;
+        const sentiment = (row.Trend_Sentiment || '').toLowerCase();
+        if (!byDate[date]) {
+          byDate[date] = { positive: 0, negative: 0, neutral: 0 };
+        }
+        if (sentiment in byDate[date]) {
+          byDate[date][sentiment] = row.count;
+        }
+      });
+
+      const labels = Object.keys(byDate).sort();
+      const positives = labels.map((date) => byDate[date].positive || 0);
+      const negatives = labels.map((date) => byDate[date].negative || 0);
+      const neutrals = labels.map((date) => byDate[date].neutral || 0);
+
+      if (labels.length === 0) {
+        return;
+      }
+
+      new Chart(chartEl, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Positive', data: positives, borderColor: '#2e7d32', tension: 0.2 },
+            { label: 'Negative', data: negatives, borderColor: '#c62828', tension: 0.2 },
+            { label: 'Neutral', data: neutrals, borderColor: '#1565c0', tension: 0.2 },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+          },
+        },
+      });
+    })
+    .catch((error) => {
+      console.error('Failed to load sentiment trend:', error);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', loadSentimentTrendChart);

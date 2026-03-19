@@ -728,3 +728,21 @@ footer p {
   }
 }
 
+
+.sentiment-trend {
+  background: #fff;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  width: min(1100px, 95%);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.sentiment-trend h2 {
+  margin-bottom: 0.5rem;
+}
+
+.sentiment-trend p {
+  margin-bottom: 1rem;
+  color: #555;
+}

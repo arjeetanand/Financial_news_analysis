@@ -228,6 +228,20 @@ curl -X POST http://127.0.0.1:5000/api/v1/inference/news \
   -d '{"headline": "Infosys wins mega deal", "summary": "Shares rally on order win"}'
 ```
 
+### Part 6 (implemented): Harden software engineering quality
+
+What is now included:
+- `pyproject.toml` with formatter/linter/test settings (`black`, `ruff`, pytest defaults).
+- GitHub Actions CI workflow (`.github/workflows/ci.yml`) for lint, format-check, and test automation.
+
+### Part 7 (implemented): Upgrade front-end storytelling
+
+What is now included:
+- `GET /api/v1/sentiment_trend` endpoint in `app.py` returning date-wise sentiment counts.
+- New dashboard visualization section in `templates/html.html`.
+- Frontend chart rendering in `static/js/js.js` using Chart.js to show sentiment trends over time.
+- Supporting styles for the new chart card in `static/css/style.css`.
+
 ---
 
 To elevate this from a good student project to a strong AI/ML engineer portfolio project:
