@@ -49,7 +49,7 @@ Access the web interface at [https://financialnewsanalysis-production.up.railway
 ## Flask Application Routes
 - `/`: Main dashboard displaying stock news and analysis.
 - `/search_stocks`: AJAX endpoint for stock symbol search.
-- `/stock_details/`: Detailed stock information and sentiment analysis.
+- `/stock_details/<symbol>`: Detailed stock information and sentiment analysis (example: `/stock_details/TCS`).
 - `/run-script`: Trigger background script execution for data update.
 
 ## Acknowledgments

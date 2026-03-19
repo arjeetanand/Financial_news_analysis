@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.DEBUG)
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
         # Convert NaN values to None, which becomes 'null' in JSON
-        if isinstance(obj, np.float) and np.isnan(obj):
+        if isinstance(obj, np.floating) and np.isnan(obj):
             return None
 
         elif isinstance(obj, (datetime, date)):
