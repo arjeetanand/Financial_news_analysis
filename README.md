@@ -206,6 +206,28 @@ python -m mlops.pipeline_cli \
   --exit-price-col News_Day_After
 ```
 
+### Part 5 (implemented): Serve inference as APIs
+
+What is now included:
+- `mlops/inference.py`: modular inference service with open-source, rule-based sentiment and entity inference wrappers.
+- New Flask inference endpoints in `app.py`:
+  - `POST /api/v1/inference/sentiment`
+  - `POST /api/v1/inference/entities`
+  - `POST /api/v1/inference/news`
+- Request validation + JSON responses suitable for integration from frontend or external services.
+
+Example requests:
+
+```bash
+curl -X POST http://127.0.0.1:5000/api/v1/inference/sentiment \
+  -H "Content-Type: application/json" \
+  -d '{"text": "TCS gains after upbeat guidance"}'
+
+curl -X POST http://127.0.0.1:5000/api/v1/inference/news \
+  -H "Content-Type: application/json" \
+  -d '{"headline": "Infosys wins mega deal", "summary": "Shares rally on order win"}'
+```
+
 ---
 
 To elevate this from a good student project to a strong AI/ML engineer portfolio project:

@@ -6,6 +6,7 @@ from .contracts import DataContractValidator, ValidationResult
 from .drift import DriftReport, detect_sentiment_drift, population_stability_index
 from .entity_linking import EntityLinker, EntityMatch, evaluate_entity_linking
 from .experiments import ExperimentRun, ExperimentTracker
+from .inference import InferenceService, SentimentPrediction
 
 __all__ = [
     "ArtifactRegistry",
@@ -22,4 +23,6 @@ __all__ = [
     "EntityLinker",
     "EntityMatch",
     "evaluate_entity_linking",
+    "InferenceService",
+    "SentimentPrediction",
 ]
