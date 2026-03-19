@@ -20,12 +20,8 @@ def population_stability_index(
     epsilon: float = 1e-8,
 ) -> float:
     """Compute PSI for two categorical distributions."""
-    baseline_dist = (
-        baseline.dropna().astype(str).str.lower().value_counts(normalize=True)
-    )
-    current_dist = (
-        current.dropna().astype(str).str.lower().value_counts(normalize=True)
-    )
+    baseline_dist = baseline.astype(str).str.lower().value_counts(normalize=True)
+    current_dist = current.astype(str).str.lower().value_counts(normalize=True)
 
     all_labels = sorted(set(baseline_dist.index).union(set(current_dist.index)))
 
