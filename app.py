@@ -7,7 +7,7 @@ import warnings
 
 import numpy as np
 import pandas as pd
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, make_response
 
 from mlops.entity_linking import EntityLinker
 from mlops.inference import InferenceService
@@ -206,6 +206,30 @@ def sentiment_trend():
     )
     grouped["Trend_Date"] = grouped["Trend_Date"].astype(str)
     return jsonify(grouped.to_dict(orient="records"))
+
+
+@app.route("/api/v1/reports/sentiment_summary")
+def sentiment_summary_report():
+    summary_df = (
+        df.assign(Sentiment=df["Sentiment"].astype(str).str.lower())
+        .groupby("Sentiment", as_index=False)
+        .size()
+        .rename(columns={"size": "count"})
+        .sort_values("Sentiment")
+    )
+
+    return jsonify(summary_df.to_dict(orient="records"))
+
+
+@app.route("/api/v1/reports/download")
+def download_report():
+    report_df = df.copy()
+    csv_bytes = report_df.to_csv(index=False).encode("utf-8")
+
+    response = make_response(csv_bytes)
+    response.headers["Content-Type"] = "text/csv; charset=utf-8"
+    response.headers["Content-Disposition"] = "attachment; filename=financial_news_report.csv"
+    return response
 
 
 @app.route("/api/v1/inference/sentiment", methods=["POST"])

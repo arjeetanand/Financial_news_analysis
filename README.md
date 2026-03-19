@@ -243,6 +243,9 @@ What is now included:
 - Added model explanation workflow:
   - `POST /api/v1/inference/explain` endpoint returning sentiment label, confidence, and keyword-level rationale.
   - UI explainer panel to inspect prediction explanations directly from the dashboard.
+- Downloadable recruiter/demo reports:
+  - `GET /api/v1/reports/sentiment_summary` for compact sentiment counts.
+  - `GET /api/v1/reports/download` for a full CSV export.
 - Supporting styles for the new chart and explainer cards in `static/css/style.css`.
 
 ---

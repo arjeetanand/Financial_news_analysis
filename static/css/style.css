@@ -780,3 +780,15 @@ footer p {
   border-radius: 6px;
   overflow-x: auto;
 }
+
+.model-explainer button + button {
+  margin-left: 0.5rem;
+}
+
+#summaryOutput {
+  margin-top: 0.6rem;
+  background: #eef4ff;
+  padding: 0.75rem;
+  border-radius: 6px;
+  overflow-x: auto;
+}

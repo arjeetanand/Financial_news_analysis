@@ -118,3 +118,32 @@ def test_infer_news_returns_explanation_payload():
     payload = response.get_json()
     assert "explanation" in payload
     assert "confidence" in payload["explanation"]
+
+
+def test_sentiment_summary_report_endpoint():
+    df = pd.DataFrame(
+        [
+            {"Triggered_Stock_Symbols": "TCS", "Triggered_Stock_Names": "Tata Consultancy Services", "Sentiment": "Positive"},
+            {"Triggered_Stock_Symbols": "INFY", "Triggered_Stock_Names": "Infosys", "Sentiment": "Negative"},
+            {"Triggered_Stock_Symbols": "HDFCBANK", "Triggered_Stock_Names": "HDFC Bank", "Sentiment": "Positive"},
+        ]
+    )
+    client = _client_with_df(df)
+
+    response = client.get('/api/v1/reports/sentiment_summary')
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    labels = {item['Sentiment']: item['count'] for item in payload}
+    assert labels['positive'] == 2
+    assert labels['negative'] == 1
+
+
+def test_download_report_endpoint_returns_csv():
+    client = _client_with_df(_df_for_inference())
+
+    response = client.get('/api/v1/reports/download')
+
+    assert response.status_code == 200
+    assert response.headers['Content-Type'].startswith('text/csv')
+    assert 'attachment; filename=financial_news_report.csv' in response.headers['Content-Disposition']

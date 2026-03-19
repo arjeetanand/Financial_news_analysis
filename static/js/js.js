@@ -222,3 +222,30 @@ function bindSentimentExplainer() {
 }
 
 document.addEventListener('DOMContentLoaded', bindSentimentExplainer);
+
+function bindReportActions() {
+  const downloadBtn = document.getElementById('downloadReportBtn');
+  const summaryBtn = document.getElementById('loadSummaryBtn');
+  const summaryOutput = document.getElementById('summaryOutput');
+
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+      window.location.href = '/api/v1/reports/download';
+    });
+  }
+
+  if (summaryBtn && summaryOutput) {
+    summaryBtn.addEventListener('click', () => {
+      fetch('/api/v1/reports/sentiment_summary')
+        .then((response) => response.json())
+        .then((payload) => {
+          summaryOutput.textContent = JSON.stringify(payload, null, 2);
+        })
+        .catch((error) => {
+          summaryOutput.textContent = `Failed to load summary: ${error}`;
+        });
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', bindReportActions);
