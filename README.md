@@ -133,6 +133,27 @@ pytest -q
 
 ## How to make this a standout AI/ML resume project
 
+Below is a **part-by-part implementation plan**. We are now starting with **Part 1** and added working open-source code under `mlops/`.
+
+### Part 1 (implemented): Productionize data + model pipeline
+
+What is now included:
+- `mlops/contracts.py`: lightweight data-contract checks (required columns, sentiment labels, duplicate warnings).
+- `mlops/artifacts.py`: local artifact registry with SHA-256 hashes for reproducibility.
+- `mlops/pipeline_cli.py`: CLI to validate output files and write lineage + artifact metadata.
+
+Run it on your generated dataset:
+
+```bash
+python -m mlops.pipeline_cli --input updated_final.xlsx
+```
+
+Artifacts generated:
+- `artifacts/registry.json`
+- `artifacts/lineage.json`
+
+---
+
 To elevate this from a good student project to a strong AI/ML engineer portfolio project:
 
 1. **Productionize data + model pipeline**
