@@ -1,17 +1,15 @@
 from datetime import datetime, date
-import numpy as np
-from flask import Flask, render_template, request, jsonify, Response
-from json import JSONEncoder
-import pandas as pd
-import subprocess
-import logging
-from flask_caching import Cache
-import math
-from datetime import datetime, timedelta
-
 import json
-
+import logging
+import math
+import subprocess
 import warnings
+
+import numpy as np
+import pandas as pd
+from flask import Flask, render_template, request, jsonify, Response
+from flask_caching import Cache
+from json import JSONEncoder
 
 warnings.filterwarnings("ignore", message=".*This is a development server.*")
 
@@ -111,14 +109,8 @@ def dashboard():
     }
 
     # Fetching stock prices
-    if news_symbol_filter:
-        selected_stock = df_filtered_news[
-            df_filtered_news["Triggered_Stock_Symbols"].str.contains(
-                news_symbol_filter, case=False, na=False
-            )
-        ].iloc[
-            0
-        ]  # Assuming the first matching record is what we want
+    if news_symbol_filter and not df_filtered_news.empty:
+        selected_stock = df_filtered_news.iloc[0]
         stock_prices = {
             "price_day_before": selected_stock.get("News_Day_Before"),
             "price_day_of": selected_stock.get("News_day"),
@@ -171,7 +163,7 @@ def stock_details(symbol):
 
 @app.route("/about")
 def about():
-    return render_template("/about.html")
+    return render_template("about.html")
 
 
 @app.route("/run-script")
