@@ -728,3 +728,55 @@ footer p {
   }
 }
 
+
+.sentiment-trend {
+  background: #fff;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  width: min(1100px, 95%);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.sentiment-trend h2 {
+  margin-bottom: 0.5rem;
+}
+
+.sentiment-trend p {
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.model-explainer {
+  background: #ffffff;
+  width: min(1100px, 95%);
+  margin: 2rem auto;
+  padding: 1.25rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.model-explainer textarea {
+  width: 100%;
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+}
+
+.model-explainer button {
+  background: #0056b3;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.model-explainer pre {
+  margin-top: 0.8rem;
+  background: #f5f5f5;
+  padding: 0.75rem;
+  border-radius: 6px;
+  overflow-x: auto;
+}
