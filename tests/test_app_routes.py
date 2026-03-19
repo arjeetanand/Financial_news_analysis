@@ -114,3 +114,11 @@ def test_stock_details_handles_nan_fields_without_crashing():
     assert isinstance(data, list)
     assert len(data) == 1
     assert data[0]["Triggered_Stock_Symbols"] == "INFY"
+
+
+def test_dashboard_with_unknown_news_symbol_filter_returns_200():
+    client = _client_with_df(_build_test_df())
+
+    response = client.get("/?news_symbol=UNKNOWN")
+
+    assert response.status_code == 200
