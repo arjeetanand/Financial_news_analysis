@@ -7,7 +7,10 @@ import warnings
 
 import numpy as np
 import pandas as pd
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, make_response
+
+from mlops.entity_linking import EntityLinker
+from mlops.inference import InferenceService
 from flask_caching import Cache
 from json import JSONEncoder
 
@@ -42,6 +45,24 @@ app.json_encoder = CustomJSONEncoder
 
 excel_path = "updated_final.xlsx"
 df = pd.read_excel(excel_path)
+
+
+def _build_entity_linker(source_df):
+    columns_present = {"Triggered_Stock_Names", "Triggered_Stock_Symbols"}.issubset(source_df.columns)
+    if not columns_present:
+        return EntityLinker({})
+
+    mapped = source_df[["Triggered_Stock_Names", "Triggered_Stock_Symbols"]].dropna()
+    company_to_symbol = {}
+    for _, row in mapped.iterrows():
+        company = str(row["Triggered_Stock_Names"]).strip()
+        symbol = str(row["Triggered_Stock_Symbols"]).strip()
+        if company and symbol:
+            company_to_symbol[company] = symbol
+    return EntityLinker(company_to_symbol=company_to_symbol)
+
+
+inference_service = InferenceService(entity_linker=_build_entity_linker(df))
 
 
 @app.route("/")
@@ -159,6 +180,98 @@ def stock_details(symbol):
 
     # Return response with application/json content type
     return Response(json_data, mimetype="application/json")
+
+
+@app.route("/api/v1/sentiment_trend")
+def sentiment_trend():
+    trend_df = df.copy()
+    if "Date_Time" in trend_df.columns:
+        trend_df["Trend_Date"] = pd.to_datetime(trend_df["Date_Time"], errors="coerce").dt.date
+    elif "Date" in trend_df.columns:
+        trend_df["Trend_Date"] = pd.to_datetime(trend_df["Date"], errors="coerce").dt.date
+    else:
+        return jsonify([])
+
+    if "Sentiment" in trend_df.columns:
+        trend_df["Trend_Sentiment"] = trend_df["Sentiment"].astype(str).str.lower()
+    else:
+        trend_df["Trend_Sentiment"] = "unknown"
+    trend_df = trend_df.dropna(subset=["Trend_Date"])
+
+    grouped = (
+        trend_df.groupby(["Trend_Date", "Trend_Sentiment"], as_index=False)
+        .size()
+        .rename(columns={"size": "count"})
+        .sort_values(["Trend_Date", "Trend_Sentiment"])
+    )
+    grouped["Trend_Date"] = grouped["Trend_Date"].astype(str)
+    return jsonify(grouped.to_dict(orient="records"))
+
+
+@app.route("/api/v1/reports/sentiment_summary")
+def sentiment_summary_report():
+    summary_df = (
+        df.assign(Sentiment=df["Sentiment"].astype(str).str.lower())
+        .groupby("Sentiment", as_index=False)
+        .size()
+        .rename(columns={"size": "count"})
+        .sort_values("Sentiment")
+    )
+
+    return jsonify(summary_df.to_dict(orient="records"))
+
+
+@app.route("/api/v1/reports/download")
+def download_report():
+    report_df = df.copy()
+    csv_bytes = report_df.to_csv(index=False).encode("utf-8")
+
+    response = make_response(csv_bytes)
+    response.headers["Content-Type"] = "text/csv; charset=utf-8"
+    response.headers["Content-Disposition"] = "attachment; filename=financial_news_report.csv"
+    return response
+
+
+@app.route("/api/v1/inference/sentiment", methods=["POST"])
+def infer_sentiment():
+    payload = request.get_json(silent=True) or {}
+    text_value = str(payload.get("text", "")).strip()
+    if not text_value:
+        return jsonify({"error": "Field 'text' is required"}), 400
+
+    prediction = inference_service.predict_sentiment(text_value)
+    return jsonify(prediction.__dict__)
+
+
+@app.route("/api/v1/inference/explain", methods=["POST"])
+def infer_explain():
+    payload = request.get_json(silent=True) or {}
+    text_value = str(payload.get("text", "")).strip()
+    if not text_value:
+        return jsonify({"error": "Field 'text' is required"}), 400
+
+    return jsonify(inference_service.explain_sentiment(text_value))
+
+
+@app.route("/api/v1/inference/entities", methods=["POST"])
+def infer_entities():
+    payload = request.get_json(silent=True) or {}
+    text_value = str(payload.get("text", "")).strip()
+    if not text_value:
+        return jsonify({"error": "Field 'text' is required"}), 400
+
+    return jsonify({"entities": inference_service.predict_entities(text_value)})
+
+
+@app.route("/api/v1/inference/news", methods=["POST"])
+def infer_news():
+    payload = request.get_json(silent=True) or {}
+    headline = str(payload.get("headline", "")).strip()
+    summary = str(payload.get("summary", "")).strip()
+    if not headline and not summary:
+        return jsonify({"error": "At least one of 'headline' or 'summary' is required"}), 400
+
+    return jsonify(inference_service.predict_news(headline=headline, summary=summary))
 
 
 @app.route("/about")
