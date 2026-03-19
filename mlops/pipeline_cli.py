@@ -95,9 +95,42 @@ def main() -> int:
 
     if args.baseline:
         baseline_df = _load_dataset(Path(args.baseline))
+        # Validate the baseline dataset to avoid runtime errors (e.g., missing columns).
+        baseline_result = validator.validate(baseline_df)
+        if not baseline_result.is_valid:
+            print("Baseline validation failed:")
+            print(
+                json.dumps(
+                    {
+                        "is_valid": baseline_result.is_valid,
+                        "errors": baseline_result.errors,
+                        "warnings": baseline_result.warnings,
+                    },
+                    indent=2,
+                )
+            )
+            return 1
+
+        # Ensure required columns exist before indexing.
+        required_column = "Sentiment"
+        missing_in_baseline = required_column not in baseline_df.columns
+        missing_in_input = required_column not in df.columns
+        if missing_in_baseline or missing_in_input:
+            missing_sources = []
+            if missing_in_baseline:
+                missing_sources.append("baseline dataset")
+            if missing_in_input:
+                missing_sources.append("input dataset")
+            print(
+                f"Error: required column '{required_column}' is missing in "
+                + " and ".join(missing_sources)
+                + ". Cannot perform sentiment drift detection."
+            )
+            return 1
+
         drift_report = detect_sentiment_drift(
-            baseline_df["Sentiment"],
-            df["Sentiment"],
+            baseline_df[required_column],
+            df[required_column],
             threshold=args.drift_threshold,
         )
         lineage["sentiment_drift"] = drift_report.__dict__
