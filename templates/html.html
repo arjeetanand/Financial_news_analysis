@@ -190,6 +190,13 @@
         </div>
       </section>
 
+      <section class="sentiment-trend" id="sentiment-trend">
+        <h2>Sentiment Trend by Date</h2>
+        <p>Track how positive, negative, and neutral headlines move over time.</p>
+        <canvas id="sentimentTrendChart" height="120"></canvas>
+      </section>
+
+
       <section class="sentiment-analysis">
         <h2>Understand Sentiment Analysis</h2>
         <br>
@@ -221,6 +228,7 @@
       <!-- Footer content -->
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', filename='js/js.js') }}"></script>
   </body>
 </html>
