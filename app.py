@@ -8,6 +8,9 @@ import warnings
 import numpy as np
 import pandas as pd
 from flask import Flask, render_template, request, jsonify, Response
+
+from mlops.entity_linking import EntityLinker
+from mlops.inference import InferenceService
 from flask_caching import Cache
 from json import JSONEncoder
 
@@ -42,6 +45,24 @@ app.json_encoder = CustomJSONEncoder
 
 excel_path = "updated_final.xlsx"
 df = pd.read_excel(excel_path)
+
+
+def _build_entity_linker(source_df):
+    columns_present = {"Triggered_Stock_Names", "Triggered_Stock_Symbols"}.issubset(source_df.columns)
+    if not columns_present:
+        return EntityLinker({})
+
+    mapped = source_df[["Triggered_Stock_Names", "Triggered_Stock_Symbols"]].dropna()
+    company_to_symbol = {}
+    for _, row in mapped.iterrows():
+        company = str(row["Triggered_Stock_Names"]).strip()
+        symbol = str(row["Triggered_Stock_Symbols"]).strip()
+        if company and symbol:
+            company_to_symbol[company] = symbol
+    return EntityLinker(company_to_symbol=company_to_symbol)
+
+
+inference_service = InferenceService(entity_linker=_build_entity_linker(df))
 
 
 @app.route("/")
@@ -159,6 +180,38 @@ def stock_details(symbol):
 
     # Return response with application/json content type
     return Response(json_data, mimetype="application/json")
+
+
+@app.route("/api/v1/inference/sentiment", methods=["POST"])
+def infer_sentiment():
+    payload = request.get_json(silent=True) or {}
+    text_value = str(payload.get("text", "")).strip()
+    if not text_value:
+        return jsonify({"error": "Field 'text' is required"}), 400
+
+    prediction = inference_service.predict_sentiment(text_value)
+    return jsonify(prediction.__dict__)
+
+
+@app.route("/api/v1/inference/entities", methods=["POST"])
+def infer_entities():
+    payload = request.get_json(silent=True) or {}
+    text_value = str(payload.get("text", "")).strip()
+    if not text_value:
+        return jsonify({"error": "Field 'text' is required"}), 400
+
+    return jsonify({"entities": inference_service.predict_entities(text_value)})
+
+
+@app.route("/api/v1/inference/news", methods=["POST"])
+def infer_news():
+    payload = request.get_json(silent=True) or {}
+    headline = str(payload.get("headline", "")).strip()
+    summary = str(payload.get("summary", "")).strip()
+    if not headline and not summary:
+        return jsonify({"error": "At least one of 'headline' or 'summary' is required"}), 400
+
+    return jsonify(inference_service.predict_news(headline=headline, summary=summary))
 
 
 @app.route("/about")

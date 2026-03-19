@@ -133,6 +133,103 @@ pytest -q
 
 ## How to make this a standout AI/ML resume project
 
+Below is a **part-by-part implementation plan**. We are now starting with **Part 1** and added working open-source code under `mlops/`.
+
+### Part 1 (implemented): Productionize data + model pipeline
+
+What is now included:
+- `mlops/contracts.py`: lightweight data-contract checks (required columns, sentiment labels, duplicate warnings).
+- `mlops/artifacts.py`: local artifact registry with SHA-256 hashes for reproducibility.
+- `mlops/pipeline_cli.py`: CLI to validate output files and write lineage + artifact metadata.
+
+Run it on your generated dataset:
+
+```bash
+python -m mlops.pipeline_cli --input updated_final.xlsx
+```
+
+Artifacts generated:
+- `artifacts/registry.json`
+- `artifacts/lineage.json`
+
+### Part 2 (implemented): Add MLOps discipline
+
+What is now included:
+- `mlops/experiments.py`: a tiny local experiment tracker that logs model runs and metrics to `artifacts/experiments.jsonl`.
+- `mlops/drift.py`: sentiment distribution drift detection using PSI (Population Stability Index).
+- `mlops/pipeline_cli.py` now supports:
+  - `--track-experiment` to persist each run as an experiment record
+  - `--baseline` and `--drift-threshold` to compute and store drift reports
+
+Example:
+
+```bash
+python -m mlops.pipeline_cli \
+  --input updated_final.xlsx \
+  --baseline updated_final.xlsx \
+  --track-experiment
+```
+
+### Part 3 (implemented): Improve entity linking quality
+
+What is now included:
+- `mlops/entity_linking.py`: reusable `EntityLinker` with normalization, alias expansion, exact/symbol matching, and fuzzy fallback.
+- DataFrame helper that adds `Linked_Company_Names`, `Linked_Symbols`, and `Entity_Link_Score`.
+- `evaluate_entity_linking(...)` utility to benchmark symbol mapping accuracy against a labeled set.
+- `mlops/pipeline_cli.py` support for labeled evaluation via `--entity-labels`, `--pred-col`, and `--label-col`.
+
+Example:
+
+```bash
+python -m mlops.pipeline_cli \
+  --input updated_final.xlsx \
+  --entity-labels labeled_symbols.csv \
+  --pred-col Triggered_Stock_Symbols \
+  --label-col True_Symbol
+```
+
+### Part 4 (implemented): Demonstrate measurable business value
+
+What is now included:
+- `mlops/business_value.py`: event-study backtest helpers for sentiment vs. forward returns.
+- Reported metrics include `coverage`, `hit_rate`, `average_forward_return`, `strategy_mean_return`, and `strategy_sharpe_like`.
+- Sentiment calibration table generation (bucket counts + mean forward return).
+- `mlops/pipeline_cli.py` supports `--run-backtest`, `--entry-price-col`, `--exit-price-col`, and records backtest outputs in lineage.
+
+Example:
+
+```bash
+python -m mlops.pipeline_cli \
+  --input updated_final.xlsx \
+  --run-backtest \
+  --entry-price-col News_day \
+  --exit-price-col News_Day_After
+```
+
+### Part 5 (implemented): Serve inference as APIs
+
+What is now included:
+- `mlops/inference.py`: modular inference service with open-source, rule-based sentiment and entity inference wrappers.
+- New Flask inference endpoints in `app.py`:
+  - `POST /api/v1/inference/sentiment`
+  - `POST /api/v1/inference/entities`
+  - `POST /api/v1/inference/news`
+- Request validation + JSON responses suitable for integration from frontend or external services.
+
+Example requests:
+
+```bash
+curl -X POST http://127.0.0.1:5000/api/v1/inference/sentiment \
+  -H "Content-Type: application/json" \
+  -d '{"text": "TCS gains after upbeat guidance"}'
+
+curl -X POST http://127.0.0.1:5000/api/v1/inference/news \
+  -H "Content-Type: application/json" \
+  -d '{"headline": "Infosys wins mega deal", "summary": "Shares rally on order win"}'
+```
+
+---
+
 To elevate this from a good student project to a strong AI/ML engineer portfolio project:
 
 1. **Productionize data + model pipeline**
