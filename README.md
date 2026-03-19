@@ -170,6 +170,24 @@ python -m mlops.pipeline_cli \
   --track-experiment
 ```
 
+### Part 3 (implemented): Improve entity linking quality
+
+What is now included:
+- `mlops/entity_linking.py`: reusable `EntityLinker` with normalization, alias expansion, exact/symbol matching, and fuzzy fallback.
+- DataFrame helper that adds `Linked_Company_Names`, `Linked_Symbols`, and `Entity_Link_Score`.
+- `evaluate_entity_linking(...)` utility to benchmark symbol mapping accuracy against a labeled set.
+- `mlops/pipeline_cli.py` support for labeled evaluation via `--entity-labels`, `--pred-col`, and `--label-col`.
+
+Example:
+
+```bash
+python -m mlops.pipeline_cli \
+  --input updated_final.xlsx \
+  --entity-labels labeled_symbols.csv \
+  --pred-col Triggered_Stock_Symbols \
+  --label-col True_Symbol
+```
+
 ---
 
 To elevate this from a good student project to a strong AI/ML engineer portfolio project:

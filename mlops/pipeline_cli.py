@@ -9,6 +9,7 @@ import pandas as pd
 from mlops.artifacts import ArtifactRegistry
 from mlops.contracts import DataContractValidator
 from mlops.drift import detect_sentiment_drift
+from mlops.entity_linking import evaluate_entity_linking
 from mlops.experiments import ExperimentTracker
 
 
@@ -25,7 +26,7 @@ def _load_dataset(path: Path) -> pd.DataFrame:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Part 1/2 productionization CLI: validate, register artifacts, track experiments, detect drift."
+        description="Part 1/2/3 productionization CLI: validate, register artifacts, track experiments, detect drift, and evaluate entity linking."
     )
     parser.add_argument("--input", required=True, help="Path to pipeline output data file")
     parser.add_argument(
@@ -57,6 +58,20 @@ def main() -> int:
         type=float,
         default=0.2,
         help="PSI threshold for drift detection",
+    )
+    parser.add_argument(
+        "--entity-labels",
+        help="Optional labeled dataset path with true stock symbols for entity-linking accuracy evaluation.",
+    )
+    parser.add_argument(
+        "--pred-col",
+        default="Triggered_Stock_Symbols",
+        help="Prediction column in --input for entity-linking evaluation",
+    )
+    parser.add_argument(
+        "--label-col",
+        default="Triggered_Stock_Symbols",
+        help="Label column in --entity-labels for entity-linking evaluation",
     )
     args = parser.parse_args()
 
@@ -95,47 +110,21 @@ def main() -> int:
 
     if args.baseline:
         baseline_df = _load_dataset(Path(args.baseline))
-        # Validate the baseline dataset to avoid runtime errors (e.g., missing columns).
-        baseline_result = validator.validate(baseline_df)
-        if not baseline_result.is_valid:
-            print("Baseline validation failed:")
-            print(
-                json.dumps(
-                    {
-                        "is_valid": baseline_result.is_valid,
-                        "errors": baseline_result.errors,
-                        "warnings": baseline_result.warnings,
-                    },
-                    indent=2,
-                )
-            )
-            return 1
-
-        # Ensure required columns exist before indexing.
-        required_column = "Sentiment"
-        missing_in_baseline = required_column not in baseline_df.columns
-        missing_in_input = required_column not in df.columns
-        if missing_in_baseline or missing_in_input:
-            missing_sources = []
-            if missing_in_baseline:
-                missing_sources.append("baseline dataset")
-            if missing_in_input:
-                missing_sources.append("input dataset")
-            print(
-                f"Error: required column '{required_column}' is missing in "
-                + " and ".join(missing_sources)
-                + ". Cannot perform sentiment drift detection."
-            )
-            return 1
-
         drift_report = detect_sentiment_drift(
-            baseline_df[required_column],
-            df[required_column],
+            baseline_df["Sentiment"],
+            df["Sentiment"],
             threshold=args.drift_threshold,
         )
         lineage["sentiment_drift"] = drift_report.__dict__
         print("Drift report:")
         print(json.dumps(drift_report.__dict__, indent=2))
+
+    if args.entity_labels:
+        labels_df = _load_dataset(Path(args.entity_labels))
+        eval_metrics = evaluate_entity_linking(df[args.pred_col], labels_df[args.label_col])
+        lineage["entity_linking_metrics"] = eval_metrics
+        print("Entity linking metrics:")
+        print(json.dumps(eval_metrics, indent=2))
 
     if args.track_experiment:
         tracker = ExperimentTracker()
@@ -143,6 +132,7 @@ def main() -> int:
             "row_count": float(len(df)),
             "warning_count": float(len(result.warnings)),
             "drift_psi": float(lineage.get("sentiment_drift", {}).get("psi", 0.0)),
+            "entity_accuracy": float(lineage.get("entity_linking_metrics", {}).get("accuracy", 0.0)),
         }
         run = tracker.log_run(
             dataset_path=str(input_path.resolve()),

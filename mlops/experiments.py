@@ -52,12 +52,11 @@ class ExperimentTracker:
             return []
 
         runs: list[ExperimentRun] = []
-        with self.tracking_file.open("r", encoding="utf-8") as handle:
-            for raw_line in handle:
-                if not raw_line.strip():
-                    continue
-                payload = json.loads(raw_line)
-                runs.append(ExperimentRun(**payload))
+        for raw_line in self.tracking_file.read_text(encoding="utf-8").splitlines():
+            if not raw_line.strip():
+                continue
+            payload = json.loads(raw_line)
+            runs.append(ExperimentRun(**payload))
         return runs
 
     @staticmethod
