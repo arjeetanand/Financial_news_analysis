@@ -41,18 +41,35 @@ class InferenceService:
     def __init__(self, entity_linker: EntityLinker) -> None:
         self.entity_linker = entity_linker
 
-    def predict_sentiment(self, text: str) -> SentimentPrediction:
+    def _keyword_hits(self, text: str) -> tuple[list[str], list[str]]:
         tokens = set(str(text).lower().split())
-        positive_hits = len(tokens & POSITIVE_KEYWORDS)
-        negative_hits = len(tokens & NEGATIVE_KEYWORDS)
+        positive_hits = sorted(tokens & POSITIVE_KEYWORDS)
+        negative_hits = sorted(tokens & NEGATIVE_KEYWORDS)
+        return positive_hits, negative_hits
 
-        if positive_hits > negative_hits:
-            confidence = min(1.0, 0.5 + 0.1 * positive_hits)
+    def predict_sentiment(self, text: str) -> SentimentPrediction:
+        positive_hits, negative_hits = self._keyword_hits(text)
+
+        if len(positive_hits) > len(negative_hits):
+            confidence = min(1.0, 0.5 + 0.1 * len(positive_hits))
             return SentimentPrediction(label="Positive", confidence=confidence)
-        if negative_hits > positive_hits:
-            confidence = min(1.0, 0.5 + 0.1 * negative_hits)
+        if len(negative_hits) > len(positive_hits):
+            confidence = min(1.0, 0.5 + 0.1 * len(negative_hits))
             return SentimentPrediction(label="Negative", confidence=confidence)
         return SentimentPrediction(label="Neutral", confidence=0.5)
+
+    def explain_sentiment(self, text: str) -> dict:
+        prediction = self.predict_sentiment(text)
+        positive_hits, negative_hits = self._keyword_hits(text)
+        return {
+            "label": prediction.label,
+            "confidence": prediction.confidence,
+            "positive_keywords": positive_hits,
+            "negative_keywords": negative_hits,
+            "explanation": (
+                f"Detected {len(positive_hits)} positive and {len(negative_hits)} negative finance keywords."
+            ),
+        }
 
     def predict_entities(self, text: str) -> list[dict[str, str | float]]:
         return [m.__dict__ for m in self.entity_linker.link_text(text)]
@@ -65,4 +82,5 @@ class InferenceService:
             "sentiment": sentiment.__dict__,
             "entities": entities,
             "entity_count": len(entities),
+            "explanation": self.explain_sentiment(combined),
         }

@@ -190,3 +190,35 @@ function loadSentimentTrendChart() {
 }
 
 document.addEventListener('DOMContentLoaded', loadSentimentTrendChart);
+
+function bindSentimentExplainer() {
+  const button = document.getElementById('explainBtn');
+  const input = document.getElementById('explainText');
+  const output = document.getElementById('explainOutput');
+  if (!button || !input || !output) {
+    return;
+  }
+
+  button.addEventListener('click', () => {
+    const text = (input.value || '').trim();
+    if (!text) {
+      output.textContent = 'Please enter text to explain.';
+      return;
+    }
+
+    fetch('/api/v1/inference/explain', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    })
+      .then((response) => response.json())
+      .then((payload) => {
+        output.textContent = JSON.stringify(payload, null, 2);
+      })
+      .catch((error) => {
+        output.textContent = `Failed to explain sentiment: ${error}`;
+      });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', bindSentimentExplainer);

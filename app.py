@@ -219,6 +219,16 @@ def infer_sentiment():
     return jsonify(prediction.__dict__)
 
 
+@app.route("/api/v1/inference/explain", methods=["POST"])
+def infer_explain():
+    payload = request.get_json(silent=True) or {}
+    text_value = str(payload.get("text", "")).strip()
+    if not text_value:
+        return jsonify({"error": "Field 'text' is required"}), 400
+
+    return jsonify(inference_service.explain_sentiment(text_value))
+
+
 @app.route("/api/v1/inference/entities", methods=["POST"])
 def infer_entities():
     payload = request.get_json(silent=True) or {}

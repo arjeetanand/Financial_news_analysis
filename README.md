@@ -240,7 +240,10 @@ What is now included:
 - `GET /api/v1/sentiment_trend` endpoint in `app.py` returning date-wise sentiment counts.
 - New dashboard visualization section in `templates/html.html`.
 - Frontend chart rendering in `static/js/js.js` using Chart.js to show sentiment trends over time.
-- Supporting styles for the new chart card in `static/css/style.css`.
+- Added model explanation workflow:
+  - `POST /api/v1/inference/explain` endpoint returning sentiment label, confidence, and keyword-level rationale.
+  - UI explainer panel to inspect prediction explanations directly from the dashboard.
+- Supporting styles for the new chart and explainer cards in `static/css/style.css`.
 
 ---
 

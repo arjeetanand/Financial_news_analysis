@@ -43,6 +43,20 @@ def test_infer_sentiment_returns_prediction():
     assert 0.0 <= payload["confidence"] <= 1.0
 
 
+def test_infer_explain_returns_keyword_rationale():
+    client = _client_with_df(_df_for_inference())
+
+    response = client.post(
+        "/api/v1/inference/explain",
+        json={"text": "TCS gains with strong profit growth"},
+    )
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["label"] == "Positive"
+    assert "positive_keywords" in payload
+
+
 def test_infer_entities_returns_matches():
     client = _client_with_df(_df_for_inference())
 
@@ -90,3 +104,17 @@ def test_sentiment_trend_endpoint_returns_time_series():
     payload = response.get_json()
     assert isinstance(payload, list)
     assert any(item["Trend_Sentiment"] == "positive" for item in payload)
+
+
+def test_infer_news_returns_explanation_payload():
+    client = _client_with_df(_df_for_inference())
+
+    response = client.post(
+        "/api/v1/inference/news",
+        json={"headline": "TCS gains", "summary": "profit growth remains strong"},
+    )
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert "explanation" in payload
+    assert "confidence" in payload["explanation"]
